@@ -1,0 +1,235 @@
+{% extends 'base/base.html' %}
+{% load widget_tweaks %}
+{% load static %}
+{% load leaflet_tags %}
+{% load geojson_tags %}
+{% block title %}Выбор параметров поиска{% endblock %}
+{% block css %}
+   {% leaflet_js %}
+   {% leaflet_css %}}
+{% endblock %}
+
+{% block content %}
+    {% block page %}
+
+<div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0 text-dark" >Выбор параметров поиска</h1>
+          </div><!-- /.col -->
+
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="{% url 'polls:sat_system' current_sat_system.id %}">Спутниковая система "{{current_sat_system.alternative_name}}"</a></li>
+              <li class="breadcrumb-item active">Выбор параметров поиска</li>
+            </ol>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+
+<!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+	  <!-- Top -->
+	  <div class="row">
+	  <div class="col-6">
+              <div class="card bg-light">
+                <div class="card-header text-muted border-bottom-0"></div>
+                <div class="card-body pt-0">
+                  <div class="row">
+                    <div class="col-7">
+                      <h2 class="lead"><b>Для одной точки</b></h2>
+					  		  <form method="post">
+							  {% csrf_token %}
+							 <!--  <div class="form-group">
+                    <label for="id_name">Название точки поиска</label>
+                    <input type="text" name="name" class="form-control" id="id_name" maxlength="128" placeholder="Название точки поиска">
+                  </div>
+				  <div class="form-group">
+				  <div name="loc"  id="id_loc_div_map">  
+<div name="loc" id="id_geom-map" class="leaflet-container-default"></div>	
+</div>				  
+</div> -->
+								 <!-- {% render_field form.name %} -->
+								 <div class="form-group">
+								{{ form }}
+								</div>
+								<input type="submit"/>
+							</form>
+                      <p class="text-muted text-sm"><b>About: </b> Web Designer / UX / Graphic Artist / Coffee Lover </p>
+                      <ul class="ml-4 mb-0 fa-ul text-muted">
+                        <li class="small"><span class="fa-li"><i class="fas fa-lg fa-building"></i></span> Address: Demo Street 123, Demo City 04312, NJ</li>
+                        <li class="small"><span class="fa-li"><i class="fas fa-lg fa-phone"></i></span> Phone #: + 800 - 12 12 23 52</li>
+                      </ul>
+                    </div>
+                    <div class="col-5 text-center">
+                      <img src="../../dist/img/user1-128x128.jpg" alt="" class="img-circle img-fluid">
+                    </div>
+                  </div>
+                </div>
+                <div class="card-footer">
+                  <div class="text-right">
+                    <a href="#" class="btn btn-sm bg-teal">
+                      <i class="fas fa-comments"></i>
+                    </a>
+                    <a href="#" class="btn btn-sm btn-primary">
+                      <i class="fas fa-user"></i> View Profile
+                    </a>
+                  </div>
+                </div>
+              </div>
+      </div><!-- /.col -->
+	  <div class="col-6">
+              <div class="card bg-light">
+                <div class="card-header text-muted border-bottom-0"></div>
+                <div class="card-body pt-0">
+                  <div class="row">
+                    <div class="col-7">
+                      <h2 class="lead"><b>Для множества точек</b></h2>
+                      <p class="text-muted text-sm"><b>About: </b> Web Designer / UX / Graphic Artist / Coffee Lover </p>
+                      <ul class="ml-4 mb-0 fa-ul text-muted">
+                        <li class="small"><span class="fa-li"><i class="fas fa-lg fa-building"></i></span> Address: Demo Street 123, Demo City 04312, NJ</li>
+                        <li class="small"><span class="fa-li"><i class="fas fa-lg fa-phone"></i></span> Phone #: + 800 - 12 12 23 52</li>
+                      </ul>
+                    </div>
+                    <div class="col-5 text-center">
+                      <img src="../../dist/img/user2-160x160.jpg" alt="" class="img-circle img-fluid">
+                    </div>
+                  </div>
+                </div>
+                <div class="card-footer">
+                  <div class="text-right">
+                    <a href="#" class="btn btn-sm bg-teal">
+                      <i class="fas fa-comments"></i>
+                    </a>
+                    <a href="#" class="btn btn-sm btn-primary">
+                      <i class="fas fa-user"></i> View Profile
+                    </a>
+                  </div>
+                </div>
+              </div>       
+      </div><!-- /.col -->
+	  </div>
+	  <!-- /.Top -->
+      <!-- Lower -->
+	  <div class="row">
+			<div class="col-6">
+              <div class="card bg-light">
+                <div class="card-header text-muted border-bottom-0"></div>
+                <div class="card-body pt-0">
+                  <div class="row">
+                    <div class="col-7">
+                      <h2 class="lead"><b>Для района</b></h2>
+                      <p class="text-muted text-sm"><b>About: </b> Web Designer / UX / Graphic Artist / Coffee Lover </p>
+                      <ul class="ml-4 mb-0 fa-ul text-muted">
+                        <li class="small"><span class="fa-li"><i class="fas fa-lg fa-building"></i></span> Address: Demo Street 123, Demo City 04312, NJ</li>
+                        <li class="small"><span class="fa-li"><i class="fas fa-lg fa-phone"></i></span> Phone #: + 800 - 12 12 23 52</li>
+                      </ul>
+                    </div>
+                    <div class="col-5 text-center">
+                      <img src="../../dist/img/user2-160x160.jpg" alt="" class="img-circle img-fluid">
+                    </div>
+                  </div>
+                </div>
+                <div class="card-footer">
+                  <div class="text-right">
+                    <a href="#" class="btn btn-sm bg-teal">
+                      <i class="fas fa-comments"></i>
+                    </a>
+                    <a href="#" class="btn btn-sm btn-primary">
+                      <i class="fas fa-user"></i> View Profile
+                    </a>
+                  </div>
+                </div>
+              </div>
+            
+      </div><!-- /.col -->
+	              <div class="col-6">
+              <div class="card bg-light">
+                <div class="card-header text-muted border-bottom-0"></div>
+                <div class="card-body pt-0">
+                  <div class="row">
+                    <div class="col-7">
+                      <h2 class="lead"><b>Для страны</b></h2>
+                      <p class="text-muted text-sm"><b>About: </b> Web Designer / UX / Graphic Artist / Coffee Lover </p>
+                      <ul class="ml-4 mb-0 fa-ul text-muted">
+                        <li class="small"><span class="fa-li"><i class="fas fa-lg fa-building"></i></span> Address: Demo Street 123, Demo City 04312, NJ</li>
+                        <li class="small"><span class="fa-li"><i class="fas fa-lg fa-phone"></i></span> Phone #: + 800 - 12 12 23 52</li>
+                      </ul>
+                    </div>
+                    <div class="col-5 text-center">
+                      <img src="../../dist/img/user2-160x160.jpg" alt="" class="img-circle img-fluid">
+                    </div>
+                  </div>
+                </div>
+                <div class="card-footer">
+                  <div class="text-right">
+                    <a href="#" class="btn btn-sm bg-teal">
+                      <i class="fas fa-comments"></i>
+                    </a>
+                    <a href="#" class="btn btn-sm btn-primary">
+                      <i class="fas fa-user"></i> View Profile
+                    </a>
+                  </div>
+                </div>
+              </div>
+      </div><!-- /.col -->
+	  </div>
+	  <!-- /.Lower -->
+      </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+    {% endblock page %}
+{% endblock content %}
+{% block scripts %}
+<script type="text/javascript">
+    function id_loc_map(map, options, lon, lat) {
+        // get point lat and lon
+		lon = '30'
+		lat = '60'
+        var lon = lon;
+        var lat = lat;
+
+        // zoom to point & add it to map
+        map.setView([lat, lon], 12);
+        L.marker([lat, lon]).addTo(map);
+    }
+</script>
+<script type="text/javascript">
+    var geodjango_id_geom = {};
+    geodjango_id_geom.fieldid = 'id_geom';
+    geodjango_id_geom.modifiable = true;
+    geodjango_id_geom.geom_type = 'Point';
+    geodjango_id_geom.srid = 4326;
+    
+
+    function id_geom_map_callback(map, options) {
+        geodjango_id_geom.store_class = L.FieldStore;
+        (new L.GeometryField(geodjango_id_geom)).addTo(map);
+        
+    };
+
+    
+</script>
+<script type="text/javascript">
+(function () {
+
+    function loadmap() {
+        var djoptions = {"resetview": true, "fitextent": true, "scale": "metric", "zoom": 3, "minzoom": 1, "layers": [["OSM", "//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", "\u00a9 <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors"]], "maxzoom": 20, "center": [60.0, 30.0], "extent": [[-90, -180], [90, 180]], "tilesextent": [], "overlays": [], "attributionprefix": null, "srid": null, "minimap": false},
+            options = {djoptions: djoptions, initfunc: loadmap,
+                       globals: false, callback: id_geom_map_callback},
+            map = L.Map.djangoMap('id_geom-map', options);
+        
+    }
+    var loadevents = ["load"];
+    if (loadevents.length === 0) loadmap();
+    else if (window.addEventListener) for (var i=0; i<loadevents.length; i++) window.addEventListener(loadevents[i], loadmap, false);
+    else if (window.jQuery) jQuery(window).on(loadevents.join(' '), loadmap);
+    
+})();
+</script>
+
+{% endblock %}

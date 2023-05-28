@@ -1,0 +1,240 @@
+{% extends 'base/base.html' %}
+{% load widget_tweaks %}
+{% load static %}
+{% load leaflet_tags %}
+{% load geojson_tags %}
+{% block title %}Выбор параметров поиска{% endblock %}
+{% block css %}
+ <!-- DataTables -->
+  <link rel="stylesheet" href="{% static '/polls/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css' %}">
+  <link rel="stylesheet" href="{% static '/polls/plugins/datatables-responsive/css/responsive.bootstrap4.min.css' %}">
+   {% leaflet_js %}
+   {% leaflet_css %}}
+{% endblock %}
+
+{% block content %}
+    {% block page %}
+
+<div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0 text-dark" >Выбор параметров поиска</h1>
+          </div><!-- /.col -->
+
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="{% url 'polls:sat_system' current_sat_system.id %}">Спутниковая система "{{current_sat_system.alternative_name}}"</a></li>
+			  {% if sat %}
+			  <li class="breadcrumb-item"><a href="#">КА {{sat.name}}</a></li>
+			  {% endif %}
+            </ol>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+
+<!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+	  <!-- Top -->
+	  <div class="row">
+	  <div class="col-6">
+              <div class="card bg-light">
+                <div class="card-header text-muted border-bottom-0"></div>
+                <div class="card-body pt-0">
+                  <div class="row">
+                    <div class="col-7">
+                      <h2 class="lead"><b>Для одной точки</b></h2>
+                      <p class="text-muted text-sm"><b>выбор: </b> 
+					  <ul class="ml-4 mb-0 fa-ul text-muted">
+					  {% if sat %}
+					  <li class="small"><i class="fas fa-lg fa-building"></i> <a  href="{% url 'polls:point_search' current_sat_system.id sat.id 0 %}">земной станции</a></li>
+					  {% else %}
+					  <li class="small"><i class="fas fa-lg fa-building"></i> <a  href="{% url 'polls:point_search' current_sat_system.id 0 0 %}">земной станции</a></li>
+					  {% endif %}
+					  <li class="small"><i class="fas fa-satellite"></i><a  href="#"> космического объекта</a></li>
+					  <li  class="small"><i class="fas fa-satellite-dish"></i><a   href="#" data-toggle="modal" data-target="#modal-xl-terminal"> терминала/абонента</a></li>
+					  <li class="small"><i class="fas fa-search-location"></i><a  href="#"> выбрать точку на карте</a></li>
+					  </ul> </p>
+                    </div>
+                    <div class="col-5 text-center">
+                      <img src="/static/images/img_466165.png" alt="" class="img-circle img-fluid">
+                    </div>
+                  </div>
+                </div>
+                <div class="card-footer">
+                </div>
+              </div>
+      </div><!-- /.col -->
+	  <div class="col-6">
+              <div class="card bg-light">
+                <div class="card-header text-muted border-bottom-0"></div>
+                <div class="card-body pt-0">
+                  <div class="row">
+                    <div class="col-7">
+                      <h2 class="lead"><b>Для множества точек</b></h2>
+                      <p class="text-muted text-sm"><b>выбор: </b> 
+					  <ul class="ml-4 mb-0 fa-ul text-muted">
+					  <li class="small"><i class="fas fa-lg fa-building"></i> земных станций системы</li>
+					  <li class="small"><i class="fas fa-satellite"></i> космических объектов</li>
+					  <li  class="small"><i class="fas fa-satellite-dish"></i> терминалов/абонентов</li>
+					  <li class="small"><i class="fas fa-search-location"></i> выбрать точки на карте</li>
+					  </ul> </p>
+                    </div>
+                    <div class="col-5 text-center">
+                      <img src="/static/images/img_466165.png" alt="" class="img-circle img-fluid">
+                    </div>
+                  </div>
+                </div>
+                <div class="card-footer">
+                </div>
+              </div>       
+      </div><!-- /.col -->
+	  </div>
+	  <!-- /.Top -->
+      <!-- Lower -->
+	  <div class="row">
+			<div class="col-6">
+              <div class="card bg-light">
+                <div class="card-header text-muted border-bottom-0"></div>
+                <div class="card-body pt-0">
+                  <div class="row">
+                    <div class="col-7">
+                      <h2 class="lead"><b>Для района</b></h2>
+                      <p class="text-muted text-sm"><b>выбор: </b> 
+					  <ul class="ml-4 mb-0 fa-ul text-muted">
+					  <li class="small"><i class="fas fa-lg fa-building"></i> земных станций</li>
+					  <li class="small"><i class="fas fa-satellite"></i> космических объектов</li>
+					  <li  class="small"><i class="fas fa-satellite-dish"></i> терминалов/абонентов</li>
+					  <li class="small"><i class="fas fa-search-location"></i> выбрать район на карте</li>
+					  </ul> </p>
+                    </div>
+                    <div class="col-5 text-center">
+                      <img src="/static/images/img_466165.png" alt="" class="img-circle img-fluid">
+                    </div>
+                  </div>
+                </div>
+                <div class="card-footer">
+                </div>
+              </div>
+            
+      </div><!-- /.col -->
+	              <div class="col-6">
+              <div class="card bg-light">
+                <div class="card-header text-muted border-bottom-0"></div>
+                <div class="card-body pt-0">
+                  <div class="row">
+                    <div class="col-7">
+                      <h2 class="lead"><b>Для страны</b></h2>
+                      <p class="text-muted text-sm"><b>выбор: </b> 
+					  <ul class="ml-4 mb-0 fa-ul text-muted">
+					  <li class="small"><i class="fas fa-lg fa-building"></i> земных станций</li>
+					  <li class="small"><i class="fas fa-satellite"></i> космических объектов</li>
+					  <li  class="small"><i class="fas fa-satellite-dish"></i> терминалов/абонентов</li>
+					  <li class="small"><i class="fas fa-search-location"></i> выбрать страну на карте</li>
+					  </ul> </p>
+                    </div>
+                    <div class="col-5 text-center">
+                      <img src="/static/images/img_466165.png" alt="" class="img-circle img-fluid">
+                    </div>
+                  </div>
+                </div>
+                <div class="card-footer">
+                </div>
+              </div>
+      </div><!-- /.col -->
+	  </div>
+	  <!-- /.Lower -->
+      </div><!-- /.container-fluid -->
+	  	<div class="modal fade" id="modal-xl-terminal">
+        <div class="modal-dialog modal-xl">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title">Терминалы</h4>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+			{% if terminals %}
+			<p>Список ранее введеных терминалов</p>
+			<table id="terminals" class="table table-bordered table-striped">
+                <thead>
+                <tr>
+					<th>Название</th>
+                    <th>Мощность</th>
+                    <th>Диаметр антенны</th>
+					<th>Действия</th>
+				</tr>
+                </thead>
+                <tbody>
+				{% for terminal in terminals %}
+                <tr>
+                  <td>{{terminal.name}}</td>
+                  <td>{{terminal.power|floatformat}}</td>
+                  <td>{{terminal.diametr|floatformat}}</td>
+				  <th>
+				  <div class="btn-group">
+				  {% if sat %}
+				   <a href="#" type="button" class="btn btn-info" data-toggle="tooltip" title="Оценить доступность"><i class="fab fa-hornbill"></i></a>
+				{% else %}
+					<a href="{% url 'polls:sys_terminal_raport' current_sat_system.id terminal.id%}" type="button" class="btn btn-info" data-toggle="tooltip" title="Оценить доступность"><i class="fab fa-hornbill"></i></a>
+				{% endif %}
+                        <button type="button" class="btn btn-default" data-toggle="tooltip" title="Изменить параметры"><i class="fas fa-edit"></i></button>
+                      </div>
+				  </th>
+                </tr>
+				{% endfor %}
+                </tbody>
+                <tfoot>
+                <tr>
+					<th>Название</th>
+                    <th>Мощность</th>
+                    <th>Диаметр антенны</th>
+					<th>Действия</th>
+                </tr>
+                </tfoot>
+              </table>
+			{% else %}
+              <p>Терминалы еще не добавлены</p>
+			  {% endif %}
+            </div>
+            <div class="modal-footer justify-content-between">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
+						{% if sat %}
+						<a href="{% url 'polls:new_terminal' current_sat_system.id sat.id%}" type="button" class="btn btn-primary"data-toggle="tooltip" title="Добавить объект">Добавить терминал</a>
+					  {% else %}
+					  <a href="{% url 'polls:new_terminal' current_sat_system.id 0%}" type="button" class="btn btn-primary"data-toggle="tooltip" title="Добавить объект">Добавить терминал</a>
+					  {% endif %}
+            </div>
+          </div>
+          <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+      </div>
+      <!-- /.modal -->
+    </section>
+    <!-- /.content -->
+    {% endblock page %}
+{% endblock content %}
+{% block scripts %}
+<!-- DataTables -->
+<script src="{% static '/polls/plugins/datatables/jquery.dataTables.min.js' %}"></script>
+<script src="{% static '/polls/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js' %}"></script>
+<script src="{% static '/polls/plugins/datatables-responsive/js/dataTables.responsive.min.js' %}"></script>
+<script src="{% static '/polls/plugins/datatables-responsive/js/responsive.bootstrap4.min.js' %}"></script>
+<!-- SweetAlert2 -->
+<script src="{% static '/polls/plugins/sweetalert2/sweetalert2.min.js' %}"></script>
+<!-- Toastr -->
+<script src="{% static '/polls/plugins/toastr/toastr.min.js' %}"></script>
+<script>
+  $(function () {
+    $("#terminals").DataTable({
+      "responsive": true,
+      "autoWidth": false,
+    });
+  });
+</script>
+{% endblock %}

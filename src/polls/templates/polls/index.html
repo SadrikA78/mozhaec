@@ -1,0 +1,473 @@
+{% extends 'base/base.html' %}
+{% load static %}
+{% block title %}Главная страница{% endblock %}
+{% block css %}
+  <!-- DataTables -->
+  <link rel="stylesheet" href="{% static '/polls/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css' %}">
+  <link rel="stylesheet" href="{% static '/polls/plugins/datatables-responsive/css/responsive.bootstrap4.min.css' %}">
+{% endblock %}
+
+{% block content %}
+    {% block page %}
+<div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0 text-dark">Доступная информация для анализа</h1>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+		<!-- Info boxes -->
+        <div class="row">
+          <div class="col-12 col-sm-6 col-md-3">
+            <div class="info-box">
+              <span class="info-box-icon bg-info elevation-1"><i class="fas fa-rocket"></i></span>
+
+              <div class="info-box-content">
+                <span class="info-box-text">Космические операторы</span>
+                <span class="info-box-number">
+                  {{ agencies|length }}
+                </span>
+              </div>
+              <!-- /.info-box-content -->
+            </div>
+            <!-- /.info-box -->
+          </div>
+          <!-- /.col -->
+          <div class="col-12 col-sm-6 col-md-3">
+            <div class="info-box mb-3">
+              <span class="info-box-icon bg-info elevation-1"><i class="fas fa-atom"></i></span>
+
+              <div class="info-box-content">
+                <span class="info-box-text">Спутниковые системы</span>
+                <span class="info-box-number">{{ sat_system|length }}</span>
+              </div>
+              <!-- /.info-box-content -->
+            </div>
+            <!-- /.info-box -->
+          </div>
+          <!-- /.col -->
+
+          <!-- fix for small devices only -->
+          <div class="clearfix hidden-md-up"></div>
+
+          <div class="col-12 col-sm-6 col-md-3">
+            <div class="info-box mb-3">
+              <span class="info-box-icon bg-info elevation-1"><i class="fas fa-satellite"></i></span>
+
+              <div class="info-box-content">
+                <span class="info-box-text">Космические аппараты</span>
+                <span class="info-box-number">{{ sats|length }}</span>
+              </div>
+              <!-- /.info-box-content -->
+            </div>
+            <!-- /.info-box -->
+          </div>
+          <!-- /.col -->
+          <div class="col-12 col-sm-6 col-md-3">
+            <div class="info-box mb-3">
+              <span class="info-box-icon bg-info elevation-1"><i class="fas fa-satellite-dish"></i></span>
+
+              <div class="info-box-content">
+                <span class="info-box-text">Наземная инфраструктура</span>
+                <span class="info-box-number">{{ nkus|length }}</span>
+              </div>
+              <!-- /.info-box-content -->
+            </div>
+            <!-- /.info-box -->
+          </div>
+          <!-- /.col -->
+        </div>
+        <!-- /.row -->
+		<div class="raw">
+		<div class="col-12">
+		<div class="card  collapsed-card">
+		 <div class="card-header">
+                <h3 class="card-title">
+                 Космические операторы
+                </h3>
+
+                <div class="card-tools">
+				<button type="button" class="btn btn-info" data-card-widget="collapse" data-toggle="tooltip" title="Развернуть"><i class="fas fa-expand"></i>
+                  </button>
+				 <a href="{% url 'polls:new_sat_operator'%}" type="button" class="btn btn-info float-right"data-toggle="tooltip" title="Добавить объект"><i class="fas fa-plus"></i></a>
+                </div>
+              </div>
+            <!-- /.card-header -->
+            <div class="card-body">
+			{% if agencies|length == 0 %}					
+			<div>Нет данных о космических операторах</div>
+			<br>
+			{% else %} 
+						 
+              <table id="example1" class="table table-bordered table-striped">
+                <thead align="center">
+                <tr>
+                  <th>Название</th>
+                  <th>Страна</th>
+                  <th>Тип</th>
+                  <th>Системы</th>
+                  <th>КА</th>
+				  <th>ЗС</th>
+				  <th>Действия</th>
+                </tr>
+                </thead>
+                <tbody align="center">
+				{% for i in agencies %}
+                <tr>
+                  <td>{{i.name}}</td>
+                  <td>{{i.country}}</td>
+                  <td>{{i.get_type_display}}</td>
+                  <td>{{i.sat_system.all|length}}</td>
+                  <td>{{i.sat.all|length}}</td>
+				  <td>{{i.nku.all|length}}</td>
+				  <td align="center">
+				  <div class="btn-group">
+                        <button type="button" class="btn btn-default" data-toggle="tooltip" title="Изменить параметры"><i class="fas fa-edit"></i></button>
+                        <button type="button" class="btn btn-block btn-danger disabled" data-toggle="tooltip" title="Удалить"><i class="far fa-trash-alt"></i></button>
+                      </div>
+				  </td>
+                </tr>
+				{% endfor %}
+                </tbody>
+                <tfoot align="center">
+                <tr>
+                  <th>Название</th>
+                  <th>Страна</th>
+                  <th>Тип</th>
+                  <th>Системы</th>
+                  <th>КА</th>
+				  <th>ЗС</th>
+				  <th>Действия</th>
+                </tr>
+                </tfoot>
+              </table>
+			  {% endif %}
+            </div>
+            <!-- /.card-body -->
+          </div>
+          <!-- /.card -->
+		
+		</div>
+          <!-- /.col -->
+		</div>
+        <!-- /.row -->
+		<div class="raw">
+		<div class="col-12">
+		<div class="card  collapsed-card">
+		 <div class="card-header">
+                <h3 class="card-title">
+                 Спутниковые системы
+                </h3>
+
+                <div class="card-tools">
+				<button type="button" class="btn btn-info" data-card-widget="collapse" data-toggle="tooltip" title="Развернуть"><i class="fas fa-expand"></i>
+                  </button>
+				<a href="{% url 'polls:new_sat_system'%}" type="button" class="btn btn-info float-right"data-toggle="tooltip" title="Добавить объект"><i class="fas fa-plus"></i></a>
+                </div>
+              </div>
+            <!-- /.card-header -->
+            <div class="card-body">
+			{% if sat_system|length == 0 %}					
+			<div>Нет данных о спутниковых системах</div>
+			<br>
+			{% else %} 
+              <table id="example2" class="table table-bordered table-striped">
+                <thead align="center">
+                <tr>
+                  <th>Название</th>
+                  <th>Страна</th>
+                  <th>Оператор</th>
+				  <th>Применение</th>
+                  <th>КА</th>
+                  <th>ЗС</th>
+				  <th>Действия</th>
+                </tr>
+                </thead>
+                <tbody align="center">
+				{% for sys in sat_system %}
+                <tr>
+                  <td><a href="{% url 'polls:sat_system' sys.id%}">{{sys.name}}</a></td>
+                  <td>{{sys.country}}</td>
+				  <td>{{sys.agency.acronym}}</td>
+                  <td>{{sys.get_usage_display}}</td>
+                  <td>{{sys.sat.all|length}}</td>
+                  <td>{{sys.nku.all|length}}</td>
+				 <td align="center">
+				  <div class="btn-group">
+                        <a href="#"type="button" class="btn btn-info" data-toggle="tooltip" title="Оценить доступность"><i class="fab fa-hornbill"></i></a>
+                        <button type="button" class="btn btn-default" data-toggle="tooltip" title="Изменить параметры"><i class="fas fa-edit"></i></button>
+                        <button type="button" class="btn btn-block btn-danger disabled" data-toggle="tooltip" title="Удалить"><i class="far fa-trash-alt"></i></button>
+                      </div>
+				  </td>
+                </tr>
+				{% endfor %}
+                </tbody>
+                <tfoot align="center">
+                <tr>
+				  <th>Название</th>
+                  <th>Страна</th>
+                  <th>Оператор</th>
+				  <th>Применение</th>
+                  <th>КА</th>
+                  <th>ЗС</th>
+				  <th>Действия</th>
+                </tr>
+                </tfoot>
+              </table>
+			  {% endif %}
+            </div>
+            <!-- /.card-body -->
+          </div>
+          <!-- /.card -->
+		
+		</div>
+          <!-- /.col -->
+		</div>
+        <!-- /.row -->
+		<div class="raw">
+		<div class="col-12">
+		<div class="card   collapsed-card">
+		 <div class="card-header">
+                <h3 class="card-title">
+                 Космические аппараты
+                </h3>
+                <div class="card-tools">
+				<button type="button" class="btn btn-info" data-card-widget="collapse" data-toggle="tooltip" title="Развернуть"><i class="fas fa-expand"></i>
+                  </button>
+				 <a href="{% url 'polls:new_ka'%}" type="button" class="btn btn-info float-right"data-toggle="tooltip" title="Добавить объект"><i class="fas fa-plus"></i></a>
+                </div>
+				 </div>
+            <!-- /.card-header -->
+            <div class="card-body">
+			{% if sats|length == 0 %}					
+			<div>Нет данных о космических аппаратах</div>
+			<br>
+			{% else %} 
+              <table id="example3" class="table table-bordered table-striped">
+                <thead align="center">
+                <tr>
+					<th>Система</th>
+					<th>Страна</th>
+					<th>Дата запуска</th>
+                    <th>Имя</th>
+                    <th>Номер полета</th>
+					<th>Номер в каталоге</th>
+                    <th>Применение</th>
+					<th>Действия</th>
+                </tr>
+                </thead>
+                <tbody align="center">
+				{% for sat in sats %}
+                <tr>
+				<td>{{sat.sat_system.alternative_name}}</td>
+				<td>{{sat.country}}</td>
+                  <td>{{sat.date_launch}}</td>
+                  <td>{{sat.name}}</td>
+                  <td>{{sat.NSSDC_ID}}</td>
+                  <td>{{sat.SCN}}</td>
+                  <td><span class="badge badge-success">{{sat.get_type_display}}</span></td>
+				  <th>
+				  <div class="btn-group">
+                        <a href="{% url 'polls:sat_system_estimate' sat.sat_system.id sat.id 0 %}" type="button" class="btn btn-info" data-toggle="tooltip" title="Оценить доступность"><i class="fab fa-hornbill"></i></a>
+                        <button type="button" class="btn btn-default" data-toggle="tooltip" title="Изменить параметры"><i class="fas fa-edit"></i></button>
+                        <button type="button" class="btn btn-block btn-danger disabled" data-toggle="tooltip" title="Удалить"><i class="far fa-trash-alt"></i></button>
+                      </div>
+				  </th>
+                </tr>
+				{% endfor %}
+                </tbody>
+                <tfoot align="center">
+                <tr>
+					<th>Система</th>
+					<th>Страна</th>
+					<th>Дата запуска</th>
+                    <th>Имя</th>
+                    <th>Номер полета</th>
+					<th>Номер в каталоге</th>
+                    <th>Применение</th>
+					<th>Действия</th>
+                </tr>
+                </tfoot>
+              </table>
+			  {% endif %}
+            </div>
+            <!-- /.card-body -->
+          </div>
+          <!-- /.card -->
+		</div>
+          <!-- /.col -->
+		</div>
+        <!-- /.row -->
+	<div class="raw">
+		<div class="col-12">
+		<div class="card  collapsed-card">
+		 <div class="card-header">
+                <h3 class="card-title">
+                 Наземная инфраструктура
+                </h3>
+
+                <div class="card-tools">
+				<button type="button" class="btn btn-info" data-card-widget="collapse" data-toggle="tooltip" title="Развернуть"><i class="fas fa-expand"></i>
+                  </button>
+				 <a href="{% url 'polls:new_nsu'%}" type="button" class="btn btn-info float-right"data-toggle="tooltip" title="Добавить объект"><i class="fas fa-plus"></i></a>
+                </div>
+              </div>
+            <!-- /.card-header -->
+            <div class="card-body">
+			{% if nkus|length == 0 %}					
+			<div>Нет данных о наземной инфраструктуре</div>
+			<br>
+			{% else %} 
+              <table id="example4" class="table table-bordered table-striped">
+ <thead align="center">
+                  <tr>
+				  <th>Страна</th>
+                    <th>Система</th>
+                    <th>Тип</th>
+                    <th>Локация</th>
+					<th>Действия</th>
+                  </tr>
+                  </thead>
+                  <tbody align="center">
+                  {% for n in nkus %}
+                <tr>
+					<td>{{n.country}}</td>
+                  <td>{{n.sat_system.alternative_name}}</td>
+                  <td>{{n.type}}</td>
+                  <td>{{n.location}}</td>
+				  <td align="center">
+				  <div class="btn-group">
+                        <a href="{% url 'polls:sat_system_estimate' 0 0 n.id %}"type="button" class="btn btn-info" data-toggle="tooltip" title="Оценить доступность"><i class="fab fa-hornbill"></i></a>
+                        <button type="button" class="btn btn-default" data-toggle="tooltip" title="Изменить параметры"><i class="fas fa-edit"></i></button>
+                        <button type="button" class="btn btn-block btn-danger disabled" data-toggle="tooltip" title="Удалить"><i class="far fa-trash-alt"></i></button>
+                      </div>
+				  </td>
+                </tr>
+				{% endfor %}
+				  </tbody>
+				  <tfoot align="center">
+                <tr>
+					<th>Страна</th>
+					 <th>Система</th>
+                    <th>Тип</th>
+                    <th>Локация</th>
+					<th>Действия</th>
+                </tr>
+                </tfoot>
+                </table>
+			   {% endif %}
+            </div>
+            <!-- /.card-body -->
+          </div>
+          <!-- /.card -->
+		
+		</div>
+          <!-- /.col -->
+		</div>
+        <!-- /.row -->
+		<div class="raw">
+		<div class="col-12">
+		 <div class="card collapsed-card">
+              <div class="card-header">
+                <h3 class="card-title">
+                  История запросов
+                </h3>
+
+                <div class="card-tools">
+				<button type="button" class="btn btn-info" data-card-widget="collapse" data-toggle="tooltip" title="Развернуть"><i class="fas fa-expand"></i>
+                  </button>
+                </div>
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body">
+                <ul class="todo-list" data-widget="todo-list">
+				{% for i in actions %}
+                  <li>
+                    <!-- drag handle -->
+                    <span class="handle">
+                      <i class="fas fa-ellipsis-v"></i>
+                      <i class="fas fa-ellipsis-v"></i>
+                    </span>
+                    <!-- checkbox -->
+                    <div  class="icheck-primary d-inline ml-2">
+                      <input type="checkbox" value="" name="todo{{forloop.counter}}" id="todoCheck{{forloop.counter}}">
+                      <label for="todoCheck{{forloop.counter}}"></label>
+                    </div>
+                    <!-- todo text -->
+					{% if i.change_message.3 == 'a' %}
+                    <span class="text">Добавлен объект "{{i.object_repr}}" </span>
+                    <!-- Emphasis label -->
+                    <small class="badge badge-success"><i class="far fa-clock"></i>{{i.action_time}}</small>
+                    <!-- General tools such as edit or delete-->
+                    <div class="tools">
+                      <i class="fas fa-edit"></i>
+                      <i class="fas fa-trash-o"></i>
+                    </div>
+					{% elif i.change_message.3 == 'c' %}
+					<span class="text">Изменен объект "{{i.object_repr}}"</span>
+                    <!-- Emphasis label -->
+                    <small class="badge badge-warning"><i class="far fa-clock"></i>{{i.action_time}}</small>
+                    <!-- General tools such as edit or delete-->
+                    <div class="tools">
+                      <i class="fas fa-edit"></i>
+                      <i class="fas fa-trash-o"></i>
+                    </div>
+					{% else %}
+					<span class="text">Удален объект "{{i.object_repr}}" {{i.change_message}}</span>
+                    <!-- Emphasis label -->
+                    <small class="badge badge-danger"><i class="far fa-clock"></i>{{i.action_time}}</small>
+                    <!-- General tools such as edit or delete-->
+                    <div class="tools">
+                      <i class="fas fa-edit"></i>
+                      <i class="fas fa-trash-o"></i>
+                    </div>
+					{{i.change_message}}
+					{% endif %}
+                  </li>
+				  {% endfor %}
+                </ul>
+				
+				
+              </div>
+              <!-- /.card-body -->
+              <div class="card-footer clearfix">
+                <button type="button" class="btn btn-info float-right"><i class="fas fa-sync-alt"></i>Обновить и выполнить заново</button>
+              </div>
+            </div>
+            <!-- /.card -->
+		</div>
+         <!-- /.col -->
+		</div>
+        <!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+    {% endblock page %}
+{% endblock content %}
+{% block scripts %}
+<!-- DataTables -->
+<script src="{% static '/polls/plugins/datatables/jquery.dataTables.min.js' %}"></script>
+<script src="{% static '/polls/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js' %}"></script>
+<script src="{% static '/polls/plugins/datatables-responsive/js/dataTables.responsive.min.js' %}"></script>
+<script src="{% static '/polls/plugins/datatables-responsive/js/responsive.bootstrap4.min.js' %}"></script>
+<script>
+  $(function () {
+    $("#example1").DataTable({
+      "responsive": true,
+      "autoWidth": false,
+    });
+	$("#example2").DataTable({
+      "responsive": true,
+      "autoWidth": false,
+    });
+		$("#example3").DataTable({
+      "responsive": true,
+      "autoWidth": false,
+    });
+	$("#example4").DataTable({
+      "responsive": true,
+      "autoWidth": false,
+    });
+  });
+</script>
+{% endblock %}

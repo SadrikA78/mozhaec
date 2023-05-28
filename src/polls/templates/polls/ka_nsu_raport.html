@@ -1,0 +1,262 @@
+{% extends 'base/base.html' %}
+{% load static %}
+{% block title %}Оценка КА-ЗС{% endblock %}
+{% block css %}
+<style>body { margin: 0;}<style/>
+<style>canvas { width: 100%; height: 100% }</style>
+<script src="{% static '/polls/plotly/js/plotly.js' %}"></script>
+<script src="{% static '/polls/my/js/three.min.js' %}"></script>
+<script src="{% static '/polls/my/js/orbit_controls.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+    {% block page %}
+
+<div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0 text-dark" >Результаты оценивания эффективности</h1>
+          </div><!-- /.col -->
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item active">Тип поиска</li>
+			  <li class="breadcrumb-item active">Элементы поиска</li>
+            </ol>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+
+<!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+         <div class="row">
+          <div class="col-12">
+            <div class="callout callout-info">
+              <h5><i class="fas fa-info"></i> Внимание:</h5>
+				Добавлена возможность формирования и печати отчета.            
+			              <!-- this row will not appear when printing -->
+              <div class="row no-print">
+                <div class="col-12">
+                  <a href="invoice-print.html" target="_blank" class="btn btn-default"><i class="fas fa-print"></i> Печать</a>
+                  <button type="button" class="btn btn-success float-right"><i class="far fa-credit-card"></i> Просмотр отчета
+                  </button>
+                  <button type="button" class="btn btn-primary float-right" style="margin-right: 5px;">
+                    <i class="fas fa-download"></i> Сформировать отчет
+                  </button>
+                </div>
+              </div>
+				</div>
+
+            <!-- Main content -->
+            <div class="invoice p-3 mb-3">
+              <!-- title row -->
+              <div class="row">
+                <div class="col-12">
+                  <h4>
+                    <i class="fas fa-globe"></i> Оценка эффективности
+                    <small class="float-right">Дата: {{date}}</small> 
+                  </h4>
+                </div>
+                <!-- /.col -->
+              </div>
+              <!-- info row -->
+              <div class="row invoice-info">
+                <div class="col-sm-4 invoice-col">
+                  <b>Космический аппарат</b>
+                  <address>
+                     <b>Название: </b>{{sat}}<br>
+                    <b>Система: </b>{{sat.sat_system.alternative_name}}<br>
+                  <b>Тип: </b> <span class="badge badge-success">{{sat.get_type_display}}</span><br>
+                  </address>
+                </div>
+                <!-- /.col -->
+                <div class="col-sm-4 invoice-col">
+				
+                </div>
+                <!-- /.col -->
+                <div class="col-sm-4 invoice-col">
+				   <b>Земная станция</b>
+				   <address>
+				   <b>Тип: </b>{{nku}}<br>
+                  <b>Система: </b>{{nku.sat_system.alternative_name}}<br>
+                  <b>Местоположение: </b>{{nku.location}}<br>
+				  </address>
+                </div>
+                <!-- /.col -->
+              </div>
+              <!-- /.row -->
+		<!-- /.TAB-->
+		<div class="row">
+		<div class="col-md-12">
+            <div class="card">
+              <div class="card-header p-2">
+                <ul class="nav nav-pills">
+                  <li class="nav-item"><a class="nav-link active" href="#dostup" data-toggle="tab">Доступность</a></li>
+                  <li class="nav-item"><a class="nav-link" href="#noiseinfo"  data-toggle="tab">Помехоустойчивость</a></li>
+                  <li class="nav-item"><a class="nav-link" href="#D" data-toggle="tab">3D</a></li>
+                </ul>
+              </div><!-- /.card-header -->
+              <div class="card-body">
+                <div class="tab-content">
+                  <div class="active tab-pane" id="dostup">
+                    <!-- 1 TAB -->
+					<div class="row">
+			  
+                <div class="col-12 table-responsive">
+				<p class="lead">Возможные окна доступности</p>
+                  <table class="table table-striped">
+                    <thead align="center">
+                    <tr>
+                      <th>Окно</th>
+                      <th>Начало доступности</th>
+                      <th>Конец доступности</th>
+                      <th>Продолжительность [мин]</th>
+                    </tr>
+                    </thead>
+                    <tbody align="center">
+					{% for win in list_windows %}
+                    <tr>
+                      <td>{{forloop.counter}}</td>
+                      <td>{{win.start}}</td>
+                      <td>{{win.end}}</td>
+                      <td>{{win.duration}}</td>
+                    </tr>
+					{% endfor %}
+                    </tbody>
+					<tfoot align="center">
+                <tr>
+                  <th></th>
+                  <th></th>
+                  <th>Итого: </th>
+                  <td>{{summ}}</td>
+                </tr>
+                </tfoot>
+                  </table>
+                </div>
+                <!-- /.col -->
+              </div>
+              <!-- /.row -->
+
+              <div class="row">
+                <!-- accepted payments column -->
+                <div class="col-6">
+                  <p class="lead">Параметры орбиты КА</p>
+
+                  <div class="table-responsive">
+                    <table class="table">
+                      <tr>
+                        <th style="width:50%">Большая полуось [км]:</th>
+                        <td>{{kepler.poluos}}</td>
+                      </tr>
+                      <tr>
+                        <th>Эксцентриситет:</th>
+                        <td>{{kepler.excentri}}</td>
+                      </tr>
+                      <tr>
+                        <th>Наклонение [град]:</th>
+                        <td>{{kepler.naklon}}</td>
+                      </tr>
+                      <tr>
+                        <th>Долгота восходящего узла:</th>
+                        <td>{{kepler.el_uz}}</td>
+                      </tr>
+					  <tr>
+                        <th>Аргумент перицентра [град]:</th>
+                        <td>{{kepler.pericentr}}</td>
+                      </tr>
+                      <tr>
+                        <th>Средняя аномалия [град]:</th>
+                        <td>{{kepler.av_anom}}</td>
+                      </tr>
+                    </table>
+                  </div>
+                </div>
+				 <!-- /.col -->
+				 <div class="col-6">
+				  <p class="lead">Угол возвышения КА [град]</p>
+				{% autoescape off %}
+				  {{ plt_div }}
+				  {% endautoescape %}
+				  </div>
+                <!-- /.col -->
+              </div>
+              <!-- /.row -->
+			   <div class="row">
+                <!-- accepted payments column -->
+                <div class="col-6">
+                  <p class="lead">Угол азимутального положения [град]</p>
+				{% autoescape off %}
+				  {{ plt_div_az }}
+				  {% endautoescape %}
+				</div>
+				 <div class="col-6">
+                  <p class="lead">Расстояние от КА до ЗС</p>
+				{% autoescape off %}
+				  {{ plt_div_al }}
+				  {% endautoescape %}
+				</div>
+                <!-- /.col -->
+				</div>
+				 <!-- /.row -->	
+				<div class="row">
+                <div class="col-12">
+				 <p class="lead">Частота доплеровского сдвига [Гц]</p>
+				  {% autoescape off %}
+				  {{ plt_div_shift }}
+				  {% endautoescape %}
+				</div>
+                <!-- /.col -->
+				</div>
+                <!-- /.row -->				 
+                  </div>
+                  <!-- /.tab-pane -->
+                  <div class="tab-pane" id="noiseinfo">
+                    <!-- 2 TAB -->
+
+					 
+			</div>
+			<!-- /.tab-pane -->
+                  <div class="tab-pane" id="D">
+                   <!-- 3 TAB-->
+				  <div class="row">
+                <!-- accepted payments column -->
+                <div class="col-12">
+                  <p class="lead">3D визуализация</p>
+				  
+              <div class="col-12">
+                <img src="{% static '/media/sat1.png' %}" class="product-image" alt="Product Image">
+              </div>
+              <div class="col-3 product-image-thumbs" align="center">
+                <div class="product-image-thumb active"><img src="{% static '/media/sat1.png' %}" alt="Product Image"></div>
+                <div class="product-image-thumb" ><img src="{% static '/media/sat2.png' %}" alt="Product Image"></div>
+               </div>
+<!-- 				  <div  style="background-image: url({% static '/media/sat1.png' %}); background-repeat: no-repeat; height: 1000px; background-size: cover; background-position: center center;">
+ -->				</div>
+                <!-- /.col -->
+              </div>
+            
+			<!-- /.row -->
+            <!-- /.invoice -->
+
+                  </div>
+                  <!-- /.tab-pane -->
+                </div>
+                <!-- /.tab-content -->
+              </div><!-- /.card-body -->
+            </div>
+            <!-- /.nav-tabs-custom -->
+          </div>
+          <!-- /.col -->
+</div>
+
+			  
+      </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+    {% endblock page %}
+{% endblock content %}
+{% block scripts %}
+{% endblock %}

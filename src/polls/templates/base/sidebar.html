@@ -1,0 +1,77 @@
+{% block sidebar %}
+<li class="nav-item has-treeview menu-open">
+            <a href="{% url 'polls:index' %}"  class="nav-link active">
+              <i class="nav-icon fas fa-globe"></i>
+              <p>
+                Общая обстановка
+                <i class="right fas fa-angle-left"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+			{% for i in country %}
+			<li class="nav-item has-treeview">
+                <a href="#" class="nav-link">
+                  <i class="nav-icon far fa-circle"></i>
+                  <p> {{i.name}}
+				   <i class="fas fa-angle-left right"></i>
+				   </p>
+				</a>
+					<ul class="nav nav-treeview">
+					{% for a in i.sat_system.all %}
+					<li class="nav-item">
+						<a href="{% url 'polls:sat_system' a.id%}" {% if a.id == current_sat_system.id %} class="nav-link active" {% else %} class="nav-link"{% endif %}>
+						  <i class="fas fa-satellite nav-icon"></i>
+						  <p> {{a.alternative_name}}</p>
+						</a>
+					  </li>
+					{% endfor %}
+						<li class="nav-item">
+						<a href="{% url 'polls:new_sat_system'%}" class="nav-link">
+						  <i class="fa fa-plus nav-icon"></i>
+						  <p>Добавить</p>
+						</a>
+					  </li>
+					</ul>
+			</li>
+			{% endfor %}
+			</ul>
+          </li>
+          <li class="nav-item">
+            <a href="#" class="nav-link">
+              <i class="nav-icon fab fa-superpowers"></i>
+              <p>
+                Доступность
+              </p>
+            </a>
+          </li>
+		  
+          <li class="nav-item has-treeview">
+            <a href="{% url 'polls:energy' %}" class="nav-link">
+              <i class="nav-icon fas fa-atom"></i>
+              <p>
+                Энергетика
+                <span class="right badge badge-danger">Новинка</span>
+              </p>
+            </a>
+          </li>
+          <li class="nav-header">ЗАМЕТКИ</li>
+          <li class="nav-item">
+            <a href="#" class="nav-link">
+              <i class="nav-icon far fa-circle text-danger"></i>
+              <p class="text">Главное</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="#" class="nav-link">
+              <i class="nav-icon far fa-circle text-warning"></i>
+              <p>Информация</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="#" class="nav-link">
+              <i class="nav-icon far fa-circle text-info"></i>
+              <p>Важное</p>
+            </a>
+          </li>
+        </ul>
+{% endblock %}

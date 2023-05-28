@@ -1,0 +1,402 @@
+{% extends 'base/base.html' %}
+{% load static %}
+{% block title %}Информация о спутниковой системе{% endblock %}
+{% block css %}
+  <!-- DataTables -->
+  <link rel="stylesheet" href="{% static '/polls/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css' %}">
+  <link rel="stylesheet" href="{% static '/polls/plugins/datatables-responsive/css/responsive.bootstrap4.min.css' %}">
+  <script src="{% static '/polls/plotly/js/plotly.js' %}"></script>
+{% endblock %}
+{% block content %}
+    {% block page %}
+<div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0 text-dark" >Информация о спутниковой системе</h1>
+          </div><!-- /.col -->
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="{% url 'polls:index' %}">Главная страница</a></li>
+              <li class="breadcrumb-item active">Спутниковая система "{{current_sat_system.alternative_name}}"</li>
+            </ol>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+
+<!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-md-3">
+
+            <!-- Profile Image -->
+            <div class="card card-primary card-outline">
+              <div class="card-body box-profile">
+                <div class="text-center">
+                  <img class="profile-user-img img-fluid img-circle"
+					   src="/static/media/{{current_sat_system.logo}}"
+                       alt="Logo">
+                </div>
+
+                <h3 class="profile-username text-center">{{current_sat_system.alternative_name}}</h3>
+
+                <p class="text-muted text-center">{{current_sat_system.name}}</p>
+
+                <ul class="list-group list-group-unbordered mb-3">
+                  <li class="list-group-item">
+                    <b>Статус</b> <a class="float-right">{{current_sat_system.get_status_display}}</a>
+                  </li>
+                  <li class="list-group-item">
+                    <b>Применение</b> <a class="float-right">{{current_sat_system.get_usage_display}}</a>
+                  </li>
+                  <li class="list-group-item">
+                    <b>Покрытие</b> <a class="float-right">{{current_sat_system.get_coverage_display}}</a>
+                  </li>
+				  <li class="list-group-item">
+                    <b>Количество требуемых спутников</b> <a class="float-right">{{current_sat_system.plan_num_sat}}</a>
+                  </li>
+                  <li class="list-group-item">
+                    <b>На орбите</b> <a class="float-right">{{current_sat_system.num_sat}} из {{current_sat_system.plan_num_sat}}</a>
+                  </li>
+				  <li class="list-group-item">
+                    <b>Количество запусков</b> <a class="float-right"></a>
+                  </li>
+                </ul>
+
+                <a href="{% url 'polls:sat_system_estimate' current_sat_system.id 0 0 %}" class="btn btn-primary btn-block"><b>Оценить доступность</b></a>
+              </div>
+              <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+
+            <!-- About Me Box -->
+            <div class="card card-primary">
+			
+              <div class="card-header">
+                <h3 class="card-title">Информация об операторе</h3>
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body">
+			  <p class="text-muted text-center"><strong>{{current_sat_system.agency.acronym}}</strong></p>
+			  <p class="text-muted text-center">{{current_sat_system.agency.name}}</p>
+                <strong><i class="fa fa-calendar "></i> Дата основания</strong>
+
+                <p class="text-muted text-right">
+                  {{current_sat_system.agency.data_foundation}}
+                </p>
+
+                <hr>
+
+                <strong><i class="fa fa-user"></i> Руководитель</strong>
+
+                <p class="text-muted text-right">{{current_sat_system.agency.CEO}}</p>
+
+                <hr>
+
+               </div>
+              <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+          </div>
+          <!-- /.col -->
+          <div class="col-md-9">
+            <div class="card">
+              <div class="card-header p-2">
+                <ul class="nav nav-pills">
+                  <li class="nav-item"><a class="nav-link active" href="#sat_info" data-toggle="tab">Группировка КА</a></li>
+                  <li class="nav-item"><a class="nav-link" href="#nku_info" data-toggle="tab">Наземный сегмент</a></li>
+                  <li class="nav-item"><a class="nav-link" href="#tech_info" data-toggle="tab">Бортовое оборудование</a></li>
+                </ul>
+              </div><!-- /.card-header -->
+              <div class="card-body">
+                <div class="tab-content">
+                  <div class="active tab-pane" id="sat_info">
+                    <!-- 1 TAB -->
+					{% if sats|length == 0 %}					
+						<div>Нет данных о спутниках системы</div>
+						<br>
+						 {% else %} 
+						 
+					<table id="example1" class="table table-bordered table-striped">
+                <thead>
+                <tr>
+					<th>Дата запуска</th>
+                    <th>Имя</th>
+                    <th>Номер полета</th>
+					<th>Номер в каталоге</th>
+                    <th>Применение</th>
+					<th>Действия</th>
+                </tr>
+                </thead>
+                <tbody>
+				{% for sat in sats %}
+                <tr>
+                  <td>{{sat.date_launch}}</td>
+                  <td>{{sat.name}}</td>
+                  <td>{{sat.NSSDC_ID}}</td>
+                  <td>{{sat.SCN}}</td>
+                  <td><span class="badge badge-success">{{sat.get_type_display}}</span></td>
+				  <th>
+				  <div class="btn-group">
+                        <a href="{% url 'polls:sat_system_estimate' current_sat_system.id sat.id 0 %}" type="button" class="btn btn-info" data-toggle="tooltip" title="Оценить доступность"><i class="fab fa-hornbill"></i></a>
+                        <button type="button" class="btn btn-default" data-toggle="tooltip" title="Изменить параметры"><i class="fas fa-edit"></i></button>
+                        <button type="button" class="btn btn-block btn-danger disabled" data-toggle="tooltip" title="Удалить"><i class="far fa-trash-alt"></i></button>
+                      </div>
+				  </th>
+                </tr>
+				{% endfor %}
+                </tbody>
+                <tfoot>
+                <tr>
+					<th>Дата запуска</th>
+                    <th>Имя</th>
+                    <th>Номер полета</th>
+					<th>Номер в каталоге</th>
+                    <th>Применение</th>
+					<th>Действия</th>
+                </tr>
+                </tfoot>
+              </table>
+            {% endif %}
+                  </div>
+                  <!-- /.tab-pane -->
+                  <div class="tab-pane" id="nku_info">
+                    <!-- 2 TAB -->
+					{% if nku|length == 0 %}					
+						<div>Нет данных о наземной инфраструктуре</div>
+						<br>
+						 {% else %} 
+						 
+					   <div class="btn-group float-right">
+						<button type="button" class="btn  btn-outline-primary dropdown-toggle dropdown-icon float-l" data-toggle="dropdown">
+                      <span class="sr-only">Toggle Dropdown</span>
+                      <div class="dropdown-menu" role="menu">
+                        <a class="dropdown-item" href="#">Действие 1</a>
+                        <a class="dropdown-item" href="#">Действие 2</a>
+                        <a class="dropdown-item" href="#">Действие 3</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="#"> Отмена</a>
+                      </div>
+                    </button>
+					<button type="button" class="btn btn-block btn-outline-primary">Действия</button>
+                  </div>
+                <div class="card-body table-responsive p-0">
+                <table class="table table-striped table-valign-middle">
+                  <thead>
+                  <tr>
+                    <th>п\п</th>
+                    <th>Тип</th>
+                    <th>Локация</th>
+					<th>Действия</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  {% for n in nku %}
+                <tr>
+                  <td>{{forloop.counter}}</td>
+                  <td>{{n.type}}</td>
+                  <td>{{n.location}}</td>
+				  <td>
+				  <div class="btn-group">
+                        <a href="{% url 'polls:sat_system_estimate' current_sat_system.id 0 n.id %}"type="button" class="btn btn-info" data-toggle="tooltip" title="Оценить доступность"><i class="fab fa-hornbill"></i></a>
+                        <button type="button" class="btn btn-default" data-toggle="tooltip" title="Изменить параметры"><i class="fas fa-edit"></i></button>
+                        <button type="button" class="btn btn-block btn-danger disabled" data-toggle="tooltip" title="Удалить"><i class="far fa-trash-alt"></i></button>
+                      </div>
+				  </td>
+                </tr>
+				{% endfor %}
+				  </tbody>
+                </table>
+              </div>
+			  {% endif %}
+			</div>
+                  <div class="tab-pane" id="tech_info">
+                   <!-- 3 TAB-->
+				   {% if nku|length == 0 %}
+				   <div>Нет данных о технических средствах</div>
+				   <br>
+				   {% else %}
+				   <!-- BackImage -->
+					<div  style="background-image: url({% static '/images/sat_back3.png' %}); background-repeat: no-repeat; height: 1000px; background-size: cover; background-position: center center;">
+					<!-- row -->
+					<div class='row'>
+						<div class="col-md-6">
+						<button type="button" class="btn btn-default" data-toggle="modal" data-target="#modal-sm">
+							Система управления космического аппарата
+						</button>
+						
+						<div class="card collapsed-card">
+							  <div class="card-header">
+								<h3 class="card-title">Система управления космического аппарата</h3>
+
+								<div class="card-tools">
+									<button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-plus"></i>
+									<button type="button" class="btn btn-tool" data-card-widget="maximize"><i class="fas fa-expand"></i></button>
+								  </button>
+								</div>
+								<!-- /.card-tools -->
+							  </div>
+							  <!-- /.card-header -->
+							  <div class="card-body">
+								Раздел в разработке
+							  </div>
+							  <!-- /.card-body -->
+							</div>
+							<!-- /.card -->
+						</div>
+						
+						</div>
+						<div class='row'>
+						<div class="col-md-6">
+						<br style="line-height:320px;">
+						 <div class="card collapsed-card">
+							  <div class="card-header">
+								<h3 class="card-title">Система терморегуляции</h3>
+
+								<div class="card-tools">
+									<button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-plus"></i>
+									<button type="button" class="btn btn-tool" data-card-widget="maximize"><i class="fas fa-expand"></i></button>
+								  </button>
+								</div>
+								<!-- /.card-tools -->
+							  </div>
+							  <!-- /.card-header -->
+							  <div class="card-body">
+								Раздел в разработке
+							  </div>
+							  <!-- /.card-body -->
+						</div>
+						</div>
+						<div class="col-md-6">
+						<br style="line-height:320px;">
+						 <div class="card collapsed-card">
+							  <div class="card-header">
+								<h3 class="card-title">Система передачи информации</h3>
+
+								<div class="card-tools">
+									<button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-plus"></i>
+									<button type="button" class="btn btn-tool" data-card-widget="maximize"><i class="fas fa-expand"></i></button>
+								  </button>
+								</div>
+								<!-- /.card-tools -->
+							  </div>
+							  <!-- /.card-header -->
+							  <div class="card-body">
+							  {% if decoder %}
+							  Для просмотра оборудования раскройте окно
+							  {% else %}
+							  Оборудование еще не добавлено
+							  				<a href="{% url 'polls:add_BA' current_sat_system.id %}" type="button" class="btn btn-info float-right"data-toggle="tooltip" title="Добавить объект"><i class="fas fa-plus"></i></a>
+
+							{% endif %}
+							  </div>
+							  <!-- /.card-body -->
+						</div>
+							<!-- /.card -->
+					</div>
+					</div>
+					<div class='row'>
+					<div class="col-md-6">
+					<br style="line-height:320px;">
+						 <div class="card collapsed-card">
+							  <div class="card-header">
+								<h3 class="card-title">Специальное бортовое оборудование</h3>
+
+								<div class="card-tools">
+									<button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-plus"></i>
+									<button type="button" class="btn btn-tool" data-card-widget="maximize"><i class="fas fa-expand"></i></button>
+								  </button>
+								</div>
+								<!-- /.card-tools -->
+							  </div>
+							  <!-- /.card-header -->
+							  <div class="card-body">
+								Раздел в разработке
+							  </div>
+							  <!-- /.card-body -->
+						</div>
+							<!-- /.card -->
+					</div>
+					</div>
+					<!-- /.row -->
+					</div>
+				  <!-- /.BackImage -->
+
+
+				   {% endif %}
+                  </div>
+                  <!-- /.tab-pane -->
+                </div>
+                <!-- /.tab-content -->
+              </div><!-- /.card-body -->
+            </div>
+            <!-- /.nav-tabs-custom -->
+          </div>
+          <!-- /.col -->
+        </div>
+        <!-- /.row -->
+      </div><!-- /.container-fluid -->
+	  <div class="modal fade" id="modal-sm">
+        <div class="modal-dialog modal-sm">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title">Small Modal</h4>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <p>One fine body&hellip;</p>
+            </div>
+            <div class="modal-footer justify-content-between">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-primary">Save changes</button>
+            </div>
+          </div>
+          <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+      </div>
+      <!-- /.modal -->
+    </section>
+    <!-- /.content -->
+    {% endblock page %}
+{% endblock content %}
+{% block scripts %}
+<script type="text/javascript">
+    function map_init(map, options, lon, lat) {
+        // get point lat and lon
+		lon = '30'
+		lat = '60'
+        var lon = lon;
+        var lat = lat;
+
+        // zoom to point & add it to map
+        map.setView([lat, lon], 12);
+        L.marker([lat, lon]).addTo(map);
+    }
+</script>
+<!-- DataTables -->
+<script src="{% static '/polls/plugins/datatables/jquery.dataTables.min.js' %}"></script>
+<script src="{% static '/polls/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js' %}"></script>
+<script src="{% static '/polls/plugins/datatables-responsive/js/dataTables.responsive.min.js' %}"></script>
+<script src="{% static '/polls/plugins/datatables-responsive/js/responsive.bootstrap4.min.js' %}"></script>
+<!-- SweetAlert2 -->
+<script src="{% static '/polls/plugins/sweetalert2/sweetalert2.min.js' %}"></script>
+<!-- Toastr -->
+<script src="{% static '/polls/plugins/toastr/toastr.min.js' %}"></script>
+<script>
+  $(function () {
+    $("#example1").DataTable({
+      "responsive": true,
+      "autoWidth": false,
+    });
+  });
+</script>
+{% endblock %}
+					<!-- 	  <div class="col-md-6 col-xl-5 mt-xl-5 wow fadeInRight" data-wow-delay="0.3s">
+							<img src="https://mdbootstrap.com/img/Mockups/Transparent/Small/admin-new.png" alt="" class="img-fluid">
+						  </div> -->

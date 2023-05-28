@@ -1,0 +1,217 @@
+{% extends 'base/base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+{% load leaflet_tags %}
+{% load geojson_tags %}
+{% block title %}Выбор точки поиска{% endblock %}
+{% block css %}
+<!-- DataTables -->
+  <link rel="stylesheet" href="{% static '/polls/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css' %}">
+  <link rel="stylesheet" href="{% static '/polls/plugins/datatables-responsive/css/responsive.bootstrap4.min.css' %}">
+{% leaflet_css %}
+{% leaflet_js %}
+{% endblock %}
+{% block content %}
+    {% block page %}
+
+<div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0 text-dark" >Выбор параметров поиска</h1>
+          </div><!-- /.col -->
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="{% url 'polls:index' %}">Главная страница</a></li>
+              <li class="breadcrumb-item active"><a href="{% url 'polls:sat_system' current_sat_system.id%}">Спутниковая система "{{current_sat_system.alternative_name}}"</a></li>
+			   {% if sat %}
+			  <li class="breadcrumb-item"><a href="#">КА {{sat.name}}</a></li>
+			  {% endif %}
+            </ol>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+
+<!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+        <div class="col-md-12">
+            <div class="card">
+              <div class="card-header p-2">
+                <ul class="nav nav-pills">
+                  <li class="nav-item"><a class="nav-link active" href="#land_station" data-toggle="tab">Земные станции</a></li>
+                  <li class="nav-item"><a class="nav-link" href="#space_obj" data-toggle="tab">Космические объекты</a></li>
+                  <li class="nav-item"><a class="nav-link" href="#terminal" data-toggle="tab">Терминалы</a></li>
+				  <li class="nav-item"><a class="nav-link" href="#map" data-toggle="tab">Карта</a></li>
+                </ul>
+              </div><!-- /.card-header -->
+              <div class="card-body">
+                <div class="tab-content">
+                  <div class="active tab-pane" id="land_station">
+                    <!-- 1 TAB -->
+					{% if sats|length == 0 %}					
+						<div>Нет данных о космических объектах</div>
+						<br>
+						 {% else %} 
+						 
+					<table id="example2" class="table table-bordered table-striped">
+                <thead>
+                <tr>
+					<th>Страна</th>
+					<th>Оператор</th>
+					<th>Группировка КА</th>
+					<th>Тип</th>
+                    <th>Расположение</th>
+					<th>Действие</th>
+                </tr>
+                </thead>
+                <tbody>
+				{% for nku in nkus %}
+                <tr>
+					<td>{{nku.country}}</td>
+					<td>{{nku.agency.acronym}}</td>
+					<td>{{nku.sat_system.alternative_name}}</td>
+                  <td>{{nku.type}}</td>
+                  <td>{{nku.location}}</td>
+				  <th>
+				  {% if sat %}
+				   <a href="{% url 'polls:ka_nsu_raport' sat.id nku.id%}" type="button" class="btn btn-info" data-toggle="tooltip" title="Оценить доступность"><i class="fab fa-hornbill"></i></a>
+				{% else %}
+					<a href="{% url 'polls:sys_nsu_raport' current_sat_system.id nku.id%}" type="button" class="btn btn-info" data-toggle="tooltip" title="Оценить доступность"><i class="fab fa-hornbill"></i></a>
+				{% endif %}
+
+				
+				  </th>
+                </tr>
+				{% endfor %}
+                </tbody>
+                <tfoot>
+                <tr>
+					<th>Страна</th>
+					<th>Оператор</th>
+					<th>Группировка КА</th>
+					<th>Тип</th>
+                    <th>Расположение</th>
+					<th>Действие</th>
+                </tr>
+                </tfoot>
+              </table>
+            {% endif %}
+                  </div>
+                  <!-- /.tab-pane -->
+                  <div class="tab-pane" id="space_obj">
+                    <!-- 2 TAB -->
+						{% if sats|length == 0 %}					
+						<div>Нет данных земных станциях</div>
+						<br>
+						 {% else %} 
+						 
+					<table id="example1" class="table table-bordered table-striped">
+                <thead>
+                <tr>
+					<th>Страна</th>
+					<th>Группировка КА</th>
+					<th>Дата запуска</th>
+                    <th>Имя</th>
+                    <th>Номер полета</th>
+					<th>Номер в каталоге</th>
+                    <th>Применение</th>
+					<th>Орбита</th>
+					<th>Действие</th>
+                </tr>
+                </thead>
+                <tbody>
+				{% for sat in sats %}
+                <tr>
+					<td>{{sat.country}}</td>
+					<td>{{sat.sat_system.alternative_name}}</td>
+                  <td>{{sat.date_launch}}</td>
+                  <td>{{sat.name}}</td>
+                  <td>{{sat.NSSDC_ID}}</td>
+                  <td>{{sat.SCN}}</td>
+                  <td><span class="badge badge-success">{{sat.get_type_display}}</span></td>
+				  <td>{{sat.sat_system.get_orbit_display}}</td>
+				  <th>
+				   <button type="button" class="btn btn-info" data-toggle="tooltip" title="Оценить доступность"><i class="fab fa-hornbill"></i></button>
+
+				  </th>
+                </tr>
+				{% endfor %}
+                </tbody>
+                <tfoot>
+                <tr>
+					<th>Страна</th>
+					<th>Группировка КА</th>
+					<th>Дата запуска</th>
+                    <th>Имя</th>
+                    <th>Номер полета</th>
+					<th>Номер в каталоге</th>
+                    <th>Применение</th>
+					<th>Орбита</th>
+					<th>Действие</th>
+                </tr>
+                </tfoot>
+              </table>
+            {% endif %}
+					
+					
+			</div>
+                  <div class="tab-pane" id="terminal">
+                   <!-- 3 TAB-->
+				  <div>Блок находится в разработке</div>
+                  </div>
+                  <!-- /.tab-pane -->
+				  <div class="tab-pane" id="map">
+                   <!-- 4 TAB-->
+                      <div>Для одной точки</div>
+					  		  <form method="post">
+							  {% csrf_token %}
+							  <div class="col-md-6">
+							  <div class="form-group">
+								<label for="id_name">Название точки поиска</label>
+								<input type="text" name="name" class="form-control" id="id_name" maxlength="128" placeholder="Название точки поиска">
+							  </div>
+							  </div>
+							{{ form.as_p }}
+					<button type="submit" class="btn btn-primary">Оценить</button>
+							</form>			  
+							
+                  </div>
+                </div>
+                <!-- /.tab-content -->
+              </div><!-- /.card-body -->
+            </div>
+            <!-- /.nav-tabs-custom -->
+          </div>
+          <!-- /.col -->
+      </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+    {% endblock page %}
+{% endblock content %}
+{% block scripts %}
+<!-- DataTables -->
+<script src="{% static '/polls/plugins/datatables/jquery.dataTables.min.js' %}"></script>
+<script src="{% static '/polls/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js' %}"></script>
+<script src="{% static '/polls/plugins/datatables-responsive/js/dataTables.responsive.min.js' %}"></script>
+<script src="{% static '/polls/plugins/datatables-responsive/js/responsive.bootstrap4.min.js' %}"></script>
+<script>
+  $(function () {
+    $("#example1").DataTable({
+      "responsive": true,
+      "autoWidth": false,
+    });
+	$("#example2").DataTable({
+      "responsive": true,
+      "autoWidth": false,
+    });
+  });
+</script>
+<script type="text/javascript">
+    function map_init_basic (map, options) {
+        L.marker([50.5, 30.5]).addTo(map);
+    }
+</script>
+{% endblock %}

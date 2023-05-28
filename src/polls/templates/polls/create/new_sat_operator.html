@@ -1,0 +1,323 @@
+{% extends 'base/base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+{% block title %}Новый космический оператор{% endblock %}
+{% block css %}
+<!-- Bootstrap Color Picker -->
+  <link rel="stylesheet" href="{% static '/polls/plugins/bootstrap-colorpicker/css/bootstrap-colorpicker.min.css' %}">
+  <!-- Select2 -->
+  <link rel="stylesheet" href="{% static '/polls/plugins/select2/css/select2.min.css' %}">
+  <link rel="stylesheet" href="{% static '/polls/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css' %}">
+  <!-- Bootstrap4 Duallistbox -->
+  <link rel="stylesheet" href="{% static '/polls/plugins/bootstrap4-duallistbox/bootstrap-duallistbox.min.css' %}">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="{% static '/polls/dist/css/adminlte.min.css' %}">
+  <!-- Ionicons -->
+  <link rel="stylesheet" href="{% static '/polls/plugins/ionicons.min.css' %}">
+  <!-- Ion Slider -->
+  <link rel="stylesheet" href="{% static '/polls/plugins/ion-rangeslider/css/ion.rangeSlider.min.css' %}">
+  <!-- bootstrap slider -->
+  <link rel="stylesheet" href="{% static '/polls/plugins/bootstrap-slider/css/bootstrap-slider.min.css' %}">
+{% endblock %}
+
+{% block content %}
+    {% block page %}
+
+<div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0 text-dark" >Добавление нового космического оператора</h1>
+          </div><!-- /.col -->
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="{% url 'polls:index' %}">Главная страница</a></li>
+              <li class="breadcrumb-item active">Новый космический оператор</li>
+            </ol>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+
+<!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+	  
+	  <!-- SELECT2 EXAMPLE -->
+        <div class="card card-default">
+          <div class="card-header">
+            <h3 class="card-title">Форма ввода данных</h3>
+
+            <div class="card-tools">
+            </div>
+          </div>
+          <!-- /.card-header -->
+          <div class="card-body">
+		  <form method="post" novalidate  id="quickForm">{% csrf_token %}
+            <div class="row">
+              <div class="col-md-6">
+			  <!-- /.form-group -->
+                <div class="form-group">
+                    <label for="id_name">Полное название</label>
+                    <input type="text" name="name" class="form-control" id="id_name" maxlength="128" placeholder="Название системы">
+                  </div>
+				  <!-- /.form-group -->
+				  </div>
+              <!-- /.col -->
+			    <div class="col-md-6">
+				<div class="form-group">
+                    <label for="id_alternative_name">Сокращенное название</label>
+                    <input type="text" name="acronym" class="form-control" id="id_acronym" maxlength="128" placeholder="Сокращение">
+                  </div>
+				 <!-- /.form-group -->
+			    </div>
+              <!-- /.col -->
+			   </div>
+              <!-- /.row -->
+			   <div class="row">
+              <div class="col-md-6">
+			   <div class="form-group">
+                  <label>Страна</label>
+                  <select class="form-control select2" name="country" id="id_country" data-placeholder="Выберете страну" style="width: 100%;">
+					<option value=""></option>
+					{% for i in country %}
+                    <option value="{{i.id}}">{{i.name}}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+				<!-- /.form-group -->
+			  </div>
+              <!-- /.col -->
+			  <div class="col-md-6">
+			   <div class="form-group">
+                    <label for="id_logo">Логотип</label>
+                    <div class="input-group">
+                      <div class="custom-file">
+                        <input type="file" name="logo" class="custom-file-input" id="id_logo">
+                        <label class="custom-file-label" for="id_logo">Выберете файл</label>
+                      </div>
+                    </div>
+                  </div>
+				  <!-- /.form-group -->
+			  </div>
+              <!-- /.col -->
+			   </div>
+              <!-- /.row -->
+				  <div class="row">
+              <div class="col-md-6">
+			  <div class="form-group">
+                  <label>Тип</label>
+                  <select class="form-control select2" name="type" id="id_type" data-placeholder="Выберете тип" style="width: 100%;">
+					<option value=""></option>
+					{% for i in TYPE_AGENCY %}
+                    <option value="{{i.0}}">{{i.1}}</option>
+					{% endfor %}
+                  </select>
+                </div>
+                <!-- /.form-group -->
+			   </div>
+              <!-- /.col -->
+			  <div class="col-md-6">
+			   <div class="form-group">
+                    <label>Дата основания</label>
+                    <div class="input-group">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text"><i class="far fa-calendar-alt"></i></span>
+                    </div>
+                    <input type="text" name='data_foundation' id='id_data_foundation' class="form-control" data-inputmask-alias="datetime" data-inputmask-inputformat="dd/mm/yyyy" data-mask>
+                  </div>
+                 </div>
+				 <!-- /.form-group -->
+			   </div>
+              <!-- /.col -->
+			  </div>
+              <!-- /.row -->
+			    <div class="row">
+			  <div class="col-md-12">
+			  <div class="form-group">
+			  <label>Генеральный директор</label>
+                <input type="text" name="CEO" class="form-control" id="id_CEO" maxlength="128" placeholder="Введите ФИО">
+                  </div>
+			   </div>
+              <!-- /.col -->
+			   </div>
+              <!-- /.row -->
+			  <button type="submit" class="btn btn-primary">Сохранить</button>
+			</form>
+            </div>
+            <!-- /.row -->
+          </div>
+          <!-- /.card-body -->
+        <!-- /.card -->
+      </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+    {% endblock page %}
+{% endblock content %}
+{% block scripts %}
+<!-- Select2 -->
+<script src="{% static '/polls/plugins/select2/js/select2.full.min.js' %}"></script>
+<!-- date-range-picker -->
+<script src="{% static '/polls/plugins/daterangepicker/daterangepicker.js' %}"></script>
+<!-- Bootstrap4 Duallistbox -->
+<script src="{% static '/polls/plugins/bootstrap4-duallistbox/jquery.bootstrap-duallistbox.min.js' %}"></script>
+<!-- InputMask -->
+<script src="{% static '/polls/plugins/moment/moment.min.js' %}"></script>
+<script src="{% static '/polls/plugins/inputmask/min/jquery.inputmask.bundle.min.js' %}"></script>
+<!-- bootstrap color picker -->
+<script src="{% static '/polls/plugins/bootstrap-colorpicker/js/bootstrap-colorpicker.min.js' %}"></script>
+<!-- Bootstrap Switch -->
+<script src="{% static '/polls/plugins/bootstrap-switch/js/bootstrap-switch.min.js' %}"></script>
+<!-- bs-custom-file-input -->
+<script src="{% static '/polls/plugins/bs-custom-file-input/bs-custom-file-input.min.js' %}"></script>
+<!-- Select2 -->
+<script src="{% static '/polls/plugins/select2/js/select2.full.min.js' %}"></script>
+<!-- date-range-picker -->
+<script src="{% static '/polls/plugins/daterangepicker/daterangepicker.js' %}"></script>
+<!-- Bootstrap4 Duallistbox -->
+<script src="{% static '/polls/plugins/bootstrap4-duallistbox/jquery.bootstrap-duallistbox.min.js' %}"></script>
+<!-- InputMask -->
+<script src="{% static '/polls/plugins/moment/moment.min.js' %}"></script>
+<script src="{% static '/polls/plugins/inputmask/min/jquery.inputmask.bundle.min.js' %}"></script>
+<!-- bootstrap color picker -->
+<script src="{% static '/polls/plugins/bootstrap-colorpicker/js/bootstrap-colorpicker.min.js' %}"></script>
+<!-- Bootstrap Switch -->
+<script src="{% static '/polls/plugins/bootstrap-switch/js/bootstrap-switch.min.js' %}"></script>
+<!-- bs-custom-file-input -->
+<script src="{% static '/polls/plugins/bs-custom-file-input/bs-custom-file-input.min.js' %}"></script>
+<!-- Ion Slider -->
+<script src="{% static '/polls/plugins/ion-rangeslider/js/ion.rangeSlider.min.js' %}"></script>
+<!-- Bootstrap slider -->
+<script src="{% static '/polls/plugins/bootstrap-slider/bootstrap-slider.min.js' %}"></script>
+<!-- jquery-validation -->
+<script src="{% static '/polls/plugins/jquery-validation/jquery.validate.min.js' %}"></script>
+<script src="{% static '/polls/plugins/jquery-validation/additional-methods.min.js' %}"></script>
+<script type="text/javascript">
+$(document).ready(function () {
+  bsCustomFileInput.init();
+});
+</script>
+<script>
+  $(function () {
+    //Initialize Select2 Elements
+    $('.select2').select2()
+
+    //Initialize Select2 Elements
+    $('.select2bs4').select2({
+      theme: 'bootstrap4'
+    })
+
+    //Datemask dd/mm/yyyy
+    $('#datemask').inputmask('dd/mm/yyyy', { 'placeholder': 'dd/mm/yyyy' })
+    //Datemask2 mm/dd/yyyy
+    $('#datemask2').inputmask('mm/dd/yyyy', { 'placeholder': 'mm/dd/yyyy' })
+    //Money Euro
+    $('[data-mask]').inputmask()
+
+    //Date range picker
+    $('#reservation').daterangepicker()
+    //Date range picker with time picker
+    $('#reservationtime').daterangepicker({
+      timePicker: true,
+      timePickerIncrement: 30,
+      locale: {
+        format: 'MM/DD/YYYY hh:mm A'
+      }
+    })
+    //Date range as a button
+    $('#daterange-btn').daterangepicker(
+      {
+        ranges   : {
+          'Today'       : [moment(), moment()],
+          'Yesterday'   : [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+          'Last 7 Days' : [moment().subtract(6, 'days'), moment()],
+          'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+          'This Month'  : [moment().startOf('month'), moment().endOf('month')],
+          'Last Month'  : [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+        },
+        startDate: moment().subtract(29, 'days'),
+        endDate  : moment()
+      },
+      function (start, end) {
+        $('#reportrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'))
+      }
+    )
+
+    //Timepicker
+    $('#timepicker').datetimepicker({
+      format: 'LT'
+    })
+    
+    //Bootstrap Duallistbox
+    $('.duallistbox').bootstrapDualListbox()
+
+    //Colorpicker
+    $('.my-colorpicker1').colorpicker()
+    //color picker with addon
+    $('.my-colorpicker2').colorpicker()
+
+    $('.my-colorpicker2').on('colorpickerChange', function(event) {
+      $('.my-colorpicker2 .fa-square').css('color', event.color.toString());
+    });
+
+    $("input[data-bootstrap-switch]").each(function(){
+      $(this).bootstrapSwitch('state', $(this).prop('checked'));
+    });
+
+  })
+</script>
+<script type="text/javascript">
+$(document).ready(function () {
+  $('#quickForm').validate({
+    rules: {
+      name: {
+        required: true
+      },
+      acronym: {
+        required: true
+      },
+      logo: {
+        required: true
+      },
+	   country: {
+        required: true
+      },
+	  type: {
+        required: true
+      },
+	  data_foundation: {
+        required: true
+	  },
+	  CEO: {
+        required: true
+      }
+    },
+    messages: {
+      name: {
+        required: "Введите название"
+		},
+	  acronym: "Введите название",
+	  logo: "Выберете файл",
+	  country: "Выберете значение",
+	  type: "Выберете значение",
+	  data_foundation: "Выберете дату",
+	  CEO: "Введите ФИО"
+    },
+	
+    errorElement: 'span',
+    errorPlacement: function (error, element) {
+      error.addClass('invalid-feedback');
+      element.closest('.form-group').append(error);
+    },
+    highlight: function (element, errorClass, validClass) {
+      $(element).addClass('is-invalid');
+    },
+    unhighlight: function (element, errorClass, validClass) {
+      $(element).removeClass('is-invalid');
+    }
+  });
+});
+</script>
+{% endblock %}
+

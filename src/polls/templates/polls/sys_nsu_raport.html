@@ -1,0 +1,186 @@
+{% extends 'base/base.html' %}
+{% load static %}
+{% block title %}Оценка CC-ЗС{% endblock %}
+{% block css %}
+<script src="{% static '/polls/plotly/js/plotly.js' %}"></script>
+  <!-- DataTables -->
+  <link rel="stylesheet" href="{% static '/polls/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css' %}">
+  <link rel="stylesheet" href="{% static '/polls/plugins/datatables-responsive/css/responsive.bootstrap4.min.css' %}">
+{% endblock %}
+
+{% block content %}
+    {% block page %}
+
+<div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0 text-dark" >Результаты оценивания доступности</h1>
+          </div><!-- /.col -->
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item active">Тип поиска</li>
+			  <li class="breadcrumb-item active">Элементы поиска</li>
+            </ol>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+
+<!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+         <div class="row">
+          <div class="col-12">
+            <div class="callout callout-info">
+              <h5><i class="fas fa-info"></i> Внимание:</h5>
+              Добавлена возможность формирования и печати отчета.
+            
+			              <!-- this row will not appear when printing -->
+              <div class="row no-print">
+                <div class="col-12">
+                  <a href="invoice-print.html" target="_blank" class="btn btn-default"><i class="fas fa-print"></i> Печать</a>
+                  <button type="button" class="btn btn-success float-right"><i class="far fa-credit-card"></i> Просмотр отчета
+                  </button>
+                  <button type="button" class="btn btn-primary float-right" style="margin-right: 5px;">
+                    <i class="fas fa-download"></i> Сформировать отчет
+                  </button>
+                </div>
+              </div>
+				</div>
+
+            <!-- Main content -->
+            <div class="invoice p-3 mb-3">
+              <!-- title row -->
+              <div class="row">
+                <div class="col-12">
+                  <h4>
+                    <i class="fas fa-globe"></i> Оценка доступности
+                    <small class="float-right">Дата: {{date}}</small> 
+                  </h4>
+                </div>
+                <!-- /.col -->
+              </div>
+              <!-- info row -->
+              <div class="row invoice-info">
+                <div class="col-sm-4 invoice-col">
+                  <b>Спутниковая система</b>
+                  <address>
+                     <b>Название: </b>{{current_sat_system.name}}<br>
+                  <b>Применение: </b> <span class="badge badge-success">{{current_sat_system.get_usage_display}}</span><br>
+				  <b>Количество КА в БД: </b>{{current_sat_system.sat.all|length }}<br>
+                  </address>
+                </div>
+                <!-- /.col -->
+                <div class="col-sm-4 invoice-col">
+				
+                </div>
+                <!-- /.col -->
+                <div class="col-sm-4 invoice-col">
+				   <b>Земная станция</b>
+				   <address>
+				   <b>Тип: </b>{{nku}}<br>
+                  <b>Система: </b>{{nku.sat_system.alternative_name}}<br>
+                  <b>Местоположение: </b>{{nku.location}}<br>
+				  <b>Вероятность доступности: </b>{{comm_win_time}} %<br>
+				  </address>
+                </div>
+                <!-- /.col -->
+              </div>
+              <!-- /.row -->
+
+              <!-- Table row -->
+              <div class="row">
+			  
+                <div class="col-12 table-responsive">
+				<p class="lead">Возможные окна доступности</p>
+				{% autoescape off %}
+				  {{ plt_div }}
+				  {% endautoescape %}
+				</div>
+                <!-- /.col -->
+              </div>
+              <!-- /.row -->
+
+              
+            <!-- /.invoice -->
+          </div><!-- /.col -->
+		  <div class="col-12">
+		<div class="card  collapsed-card">
+		 <div class="card-header">
+                <h3 class="card-title">
+                 Космические аппараты
+                </h3>
+
+                <div class="card-tools">
+				<button type="button" class="btn btn-info" data-card-widget="collapse" data-toggle="tooltip" title="Развернуть"><i class="fas fa-expand"></i>
+                  </button>
+                </div>
+              </div>
+            <!-- /.card-header -->
+            <div class="card-body">
+              <table id="example1" class="table table-bordered table-striped">
+                <thead align="center">
+                <tr>
+                  <th>Название</th>
+                  <th>Количество окон</th>
+                  <th>Вероятность доступности</th>
+                  <th>Общее время [мин.]</th>
+				  <th>Действия</th>
+                </tr>
+                </thead>
+                <tbody align="center">
+				{% for row in sat_windows_list %}
+                <tr>
+                  <td>{{row.sat}}</td>
+                  <td>{{row.item}}</td>
+                  <td>{{row.p}} %</td>
+                  <td>{{row.comm_t}}</td>
+				  <td align="center">
+				  <div class="btn-group">
+                        <a href="{% url 'polls:ka_nsu_raport' row.sat_id nku.id %}" type="button" class="btn btn-info" data-toggle="tooltip" title="Оценить доступность"><i class="fab fa-hornbill"></i></a>
+					   </div>
+				  </td>
+                </tr>
+				{% endfor %}
+                </tbody>
+                <tfoot align="center">
+                <tr>
+                  <th>Название</th>
+                  <th>Количество окон</th>
+                  <th>Вероятность доступности</th>
+                  <th>Общее время [мин.]</th>
+				  <th>Действия</th>
+                </tr>
+                </tfoot>
+              </table>
+            </div>
+            <!-- /.card-body -->
+          </div>
+          <!-- /.card -->
+		</div><!-- /.col -->
+		 
+        </div><!-- /.row -->
+		<div class="row">
+		</div><!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+    {% endblock page %}
+{% endblock content %}
+{% block scripts %}
+<!-- DataTables -->
+<script src="{% static '/polls/plugins/datatables/jquery.dataTables.min.js' %}"></script>
+<script src="{% static '/polls/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js' %}"></script>
+<script src="{% static '/polls/plugins/datatables-responsive/js/dataTables.responsive.min.js' %}"></script>
+<script src="{% static '/polls/plugins/datatables-responsive/js/responsive.bootstrap4.min.js' %}"></script>
+<script>
+  $(function () {
+    $("#example1").DataTable({
+      "responsive": true,
+      "autoWidth": false,
+    });
+  });
+</script>
+{% endblock %}
